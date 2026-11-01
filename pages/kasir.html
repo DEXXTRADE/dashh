@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kasir POS - DEXXLAUNDRY</title>
+  <link rel="stylesheet" href="../assets/css/variables.css">
+  <link rel="stylesheet" href="../assets/css/style.css">
+  <style>
+    .pos-layout {
+      display: grid;
+      grid-template-columns: 1.5fr 1fr;
+      gap: 24px;
+    }
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+    .form-group-full {
+      margin-bottom: 16px;
+    }
+    .receipt-box {
+      background-color: var(--bg-surface);
+      border: 1px dashed var(--border-hover);
+      border-radius: 8px;
+      padding: 20px;
+      font-family: monospace;
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+    }
+    @media (max-width: 1024px) {
+      .pos-layout { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-brand">
+        DEXX<span>LAUNDRY</span>
+      </div>
+      <ul class="sidebar-menu">
+        <li class="sidebar-item">
+          <a href="dashboard.html" class="sidebar-link">Dashboard</a>
+        </li>
+        <li class="sidebar-item">
+          <a href="order.html" class="sidebar-link">Order</a>
+        </li>
+        <li class="sidebar-item">
+          <a href="kasir.html" class="sidebar-link active">Kasir</a>
+        </li>
+        <li class="sidebar-item">
+          <a href="pelanggan.html" class="sidebar-link">Pelanggan</a>
+        </li>
+        <li class="sidebar-item">
+          <a href="stok-mesin.html" class="sidebar-link">Stok & Mesin</a>
+        </li>
+        <li class="sidebar-item owner-only">
+          <a href="karyawan.html" class="sidebar-link">Karyawan</a>
+        </li>
+        <li class="sidebar-item owner-only">
+          <a href="laporan.html" class="sidebar-link">Laporan</a>
+        </li>
+        <li class="sidebar-item">
+          <a href="pengaturan.html" class="sidebar-link">Pengaturan</a>
+        </li>
+      </ul>
+      <div style="padding: 20px; border-top: 1px solid var(--border-color);">
+        <div style="font-size: 0.875rem; font-weight: 600;" id="userNameDisplay">Memuat...</div>
+        <div style="font-size: 0.75rem; color: var(--text-secondary); text-transform: uppercase;" id="userRoleDisplay">...</div>
+        <button onclick="logoutUser()" style="margin-top: 12px; width: 100%; padding: 8px; background: none; border: 1px solid var(--border-color); color: var(--accent-danger); border-radius: 6px; cursor: pointer; font-size: 0.75rem; font-weight: 600;">Keluar Sesi</button>
+      </div>
+    </aside>
+
+    <!-- Konten Utama -->
+    <main class="main-content">
+      <header class="main-header">
+        <div>
+          <h1 style="font-size: 1.5rem; font-weight: 700;">Kasir & Transaksi POS</h1>
+          <p style="font-size: 0.875rem; color: var(--text-secondary);">Input order baru dan proses pembayaran pelanggan</p>
+        </div>
+      </header>
+
+      <div class="content-body">
+        <div class="pos-layout">
+          
+          <!-- Formulir Order Baru -->
+          <div class="card">
+            <h3 style="font-size: 1.125rem; font-weight: 700; margin-bottom: 20px;">Formulir Order Baru</h3>
+            <form id="posForm" onsubmit="processTransaction(event)">
+              
+              <div class="form-row">
+                <div class="form-group-full" style="margin-bottom: 0;">
+                  <label class="form-label" style="display:block; font-size:0.875rem; font-weight:500; margin-bottom:8px; color:var(--text-secondary);">Nama Pelanggan</label>
+                  <input type="text" id="custName" class="form-input" placeholder="Masukkan nama pelanggan" required style="width:100%; padding:12px; background:var(--bg-surface); border:1px solid var(--border-color); border-radius:8px; color:var(--text-primary);">
+                </div>
+                <div class="form-group-full" style="margin-bottom: 0;">
+                  <label class="form-label" style="display:block; font-size:0.875rem; font-weight:500; margin-bottom:8px; color:var(--text-secondary);">Nomor WhatsApp</label>
+                  <input type="text" id="custPhone" class="form-input" placeholder="08xxxxxxxxxx" required style="width:100%; padding:12px; background:var(--bg-surface); border:1px solid var(--border-color); border-radius:8px; color:var(--text-primary);">
+                </div>
+              </div>
+
+              <div class="form-group-full">
+                <label class="form-label" style="display:block; font-size:0.875rem; font-weight:500; margin-bottom:8px; color:var(--text-secondary);">Pilih Layanan (Tarif Sinkron dari Pengaturan)</label>
+                <select id="serviceType" class="form-input" onchange="calculateTotal()" style="width:100%; padding:12px; background:var(--bg-surface); border:1px solid var(--border-color); border-radius:8px; color:var(--text-primary);">
+                  <!-- Opsi layanan akan dimuat otomatis oleh JavaScript dari pengaturan -->
+                </select>
+              </div>
+
+              <div class="form-row">
+                <div>
+                  <label class="form-label" style="display:block; font-size:0.875rem; font-weight:500; margin-bottom:8px; color:var(--text-secondary);">Berat / Jumlah</label>
+                  <input type="number" id="qtyWeight" class="form-input" value="1" min="1" oninput="calculateTotal()" required style="width:100%; padding:12px; background:var(--bg-surface); border:1px solid var(--border-color); border-radius:8px; color:var(--text-primary);">
+                </div>
+                <div>
+                  <label class="form-label" style="display:block; font-size:0.875rem; font-weight:500; margin-bottom:8px; color:var(--text-secondary);">Status Pembayaran</label>
+                  <select id="payStatus" class="form-input" style="width:100%; padding:12px; background:var(--bg-surface); border:1px solid var(--border-color); border-radius:8px; color:var(--text-primary);">
+                    <option value="Lunas">Lunas</option>
+                    <option value="DP">DP (Bayar Sebagian)</option>
+                    <option value="Belum Bayar">Belum Bayar</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-group-full" style="margin-top: 20px;">
+                <button type="submit" style="width:100%; padding:14px; background-color:var(--accent-primary); color:#FFF; border:none; border-radius:8px; font-weight:600; font-size:1rem; cursor:pointer; box-shadow:var(--glow-teal);">Simpan & Cetak Nota</button>
+              </div>
+
+            </form>
+          </div>
+
+          <!-- Ringkasan & Struk Preview -->
+          <div class="card">
+            <h3 style="font-size: 1.125rem; font-weight: 700; margin-bottom: 20px;">Ringkasan Pembayaran</h3>
+            <div style="margin-bottom: 20px;">
+              <div style="display:flex; justify-content:space-between; margin-bottom:12px; font-size:0.9375rem;">
+                <span style="color:var(--text-secondary);">Subtotal:</span>
+                <span id="subtotalText" style="font-weight:600;">Rp 0</span>
+              </div>
+              <div style="display:flex; justify-content:space-between; margin-bottom:12px; font-size:0.9375rem; border-bottom:1px solid var(--border-color); padding-bottom:12px;">
+                <span style="color:var(--text-secondary);">Estimasi Selesai:</span>
+                <span style="font-weight:600; color:var(--accent-primary);">2 Hari</span>
+              </div>
+              <div style="display:flex; justify-content:space-between; font-size:1.125rem; font-weight:700;">
+                <span>Total Biaya:</span>
+                <span id="grandTotalText" style="color:var(--accent-success);">Rp 0</span>
+              </div>
+            </div>
+
+            <div class="receipt-box" id="receiptPreview">
+              <strong>DEXXLAUNDRY RECEIPT</strong><br>
+              --------------------------------<br>
+              No Resi: LDY-20261011-001<br>
+              Pelanggan: [Belum diisi]<br>
+              Layanan: -<br>
+              Jumlah: 1 Unit/Kg<br>
+              Total: Rp 0<br>
+              Status: Lunas<br>
+              --------------------------------<br>
+              Terima kasih telah mempercayakan<br>
+              cucian Anda pada DEXXLAUNDRY!
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="../assets/js/auth.js"></script>
+  <script>
+    // Ambil tarif dari localStorage atau gunakan default jika belum pernah diatur
+    function getPrices() {
+      const defaultPrices = {
+        priceReguler: 6000,
+        priceExpress: 10000,
+        priceCuciSetrika: 8000,
+        priceSetrika: 5000,
+        priceKarpet: 35000
+      };
+
+      const saved = localStorage.getItem('dexx_settings');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        return {
+          priceReguler: parseInt(parsed.priceReguler) || 6000,
+          priceExpress: parseInt(parsed.priceExpress) || 10000,
+          priceCuciSetrika: parseInt(parsed.priceCuciSetrika) || 8000,
+          priceSetrika: parseInt(parsed.priceSetrika) || 5000,
+          priceKarpet: parseInt(parsed.priceKarpet) || 35000
+        };
+      }
+      return defaultPrices;
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      const user = checkAuth();
+      if (!user) return;
+      document.getElementById('userNameDisplay').textContent = user.name;
+      document.getElementById('userRoleDisplay').textContent = user.role === 'owner' ? 'Owner / Pemilik' : 'Karyawan / Kasir';
+      if (user.role !== 'owner') {
+        document.querySelectorAll('.owner-only').forEach(el => el.style.display = 'none');
+      }
+
+      populateServiceDropdown();
+      calculateTotal();
+    });
+
+    function populateServiceDropdown() {
+      const prices = getPrices();
+      const select = document.getElementById('serviceType');
+      
+      select.innerHTML = `
+        <option value="${prices.priceReguler}">Cuci Kiloan Reguler (Rp ${prices.priceReguler.toLocaleString('id-ID')} / kg)</option>
+        <option value="${prices.priceExpress}">Cuci Kiloan Express (Rp ${prices.priceExpress.toLocaleString('id-ID')} / kg)</option>
+        <option value="${prices.priceCuciSetrika}">Cuci + Setrika (Rp ${prices.priceCuciSetrika.toLocaleString('id-ID')} / kg)</option>
+        <option value="${prices.priceSetrika}">Setrika Saja (Rp ${prices.priceSetrika.toLocaleString('id-ID')} / kg)</option>
+        <option value="${prices.priceKarpet}">Cuci Karpet (Rp ${prices.priceKarpet.toLocaleString('id-ID')} / pcs)</option>
+      `;
+    }
+
+    function calculateTotal() {
+      const pricePerUnit = parseInt(document.getElementById('serviceType').value) || 0;
+      const qty = parseInt(document.getElementById('qtyWeight').value) || 1;
+      const total = pricePerUnit * qty;
+
+      const formatted = 'Rp ' + total.toLocaleString('id-ID');
+      document.getElementById('subtotalText').textContent = formatted;
+      document.getElementById('grandTotalText').textContent = formatted;
+
+      const name = document.getElementById('custName').value || '[Nama Pelanggan]';
+      const serviceSelect = document.getElementById('serviceType');
+      const serviceText = serviceSelect.selectedOptions.length > 0 ? serviceSelect.selectedOptions[0].text : '-';
+      const payStatus = document.getElementById('payStatus').value;
+
+      document.getElementById('receiptPreview').innerHTML = `
+        <strong>DEXXLAUNDRY RECEIPT</strong><br>
+        --------------------------------<br>
+        No Resi: LDY-20261011-012<br>
+        Pelanggan: ${name}<br>
+        Layanan: ${serviceText.split('(')[0]}<br>
+        Jumlah: ${qty} Unit/Kg<br>
+        Total: ${formatted}<br>
+        Status: ${payStatus}<br>
+        --------------------------------<br>
+        Terima kasih telah mempercayakan<br>
+        cucian Anda pada DEXXLAUNDRY!
+      `;
+    }
+
+    document.getElementById('custName').addEventListener('input', calculateTotal);
+
+ function processTransaction(e) {
+      e.preventDefault();
+      
+      const name = document.getElementById('custName').value;
+      const phone = document.getElementById('custPhone').value;
+      const serviceSelect = document.getElementById('serviceType');
+      const serviceText = serviceSelect.selectedOptions[0].text.split('(')[0].trim();
+      const pricePerUnit = parseInt(serviceSelect.value);
+      const qty = parseInt(document.getElementById('qtyWeight').value) || 1;
+      const totalNum = pricePerUnit * qty;
+      const totalFormatted = 'Rp ' + totalNum.toLocaleString('id-ID');
+
+      // Buat objek order baru
+      const newOrder = {
+        id: 'LDY-' + Date.now().toString().slice(-8),
+        name: name,
+        phone: phone,
+        service: serviceText + ` (${qty} kg/unit)`,
+        total: totalFormatted,
+        status: 'Masuk'
+      };
+
+      // Ambil data order lama atau buat array baru
+      let orders = JSON.parse(localStorage.getItem('dexx_orders')) || [
+        { id: 'LDY-20260316-001', name: 'hjanja', service: 'Cuci Kiloan Reguler (4 kg)', total: 'Rp 120.000', status: 'Masuk' },
+        { id: 'LDY-20260315-83458', name: 'Dedi Kurniawan', service: 'Cuci + Setrika (3.5 kg)', total: 'Rp 38.920', status: 'Setrika' },
+        { id: 'LDY-20260315-34712', name: 'Asep Gustiawan', service: 'Cuci Express (5 kg)', total: 'Rp 52.080', status: 'Siap Ambil' }
+      ];
+
+      // Masukkan order baru ke urutan paling atas
+      orders.unshift(newOrder);
+      localStorage.setItem('dexx_orders', JSON.stringify(orders));
+
+      alert('Transaksi berhasil disimpan dan masuk ke riwayat order!');
+      window.location.href = 'order.html';
+    }
+  </script>
+</body>
+</html>

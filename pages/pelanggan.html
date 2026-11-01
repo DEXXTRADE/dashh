@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pelanggan - DEXXLAUNDRY</title>
+  <link rel="stylesheet" href="../assets/css/variables.css">
+  <link rel="stylesheet" href="../assets/css/style.css">
+  <style>
+    .table-container { width: 100%; overflow-x: auto; }
+    .data-table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.875rem; }
+    .data-table th, .data-table td { padding: 14px 16px; border-bottom: 1px solid var(--border-color); }
+    .data-table th { color: var(--text-secondary); font-weight: 600; background-color: var(--bg-surface); }
+    .data-table tr:hover td { background-color: var(--bg-surface-hover); }
+    .search-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; gap: 16px; }
+    .search-input { width: 100%; max-width: 320px; padding: 10px 14px; background-color: var(--bg-surface); border: 1px solid var(--border-color); border-radius: 8px; color: var(--text-primary); font-size: 0.875rem; }
+    .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 100; align-items: center; justify-content: center; }
+    .modal-content { background: var(--bg-card); border: 1px solid var(--border-color); padding: 30px; border-radius: 12px; width: 100%; max-width: 400px; }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <aside class="sidebar">
+      <div class="sidebar-brand">DEXX<span>LAUNDRY</span></div>
+      <ul class="sidebar-menu">
+        <li class="sidebar-item"><a href="dashboard.html" class="sidebar-link">Dashboard</a></li>
+        <li class="sidebar-item"><a href="order.html" class="sidebar-link">Order</a></li>
+        <li class="sidebar-item"><a href="kasir.html" class="sidebar-link">Kasir</a></li>
+        <li class="sidebar-item"><a href="pelanggan.html" class="sidebar-link active">Pelanggan</a></li>
+        <li class="sidebar-item"><a href="stok-mesin.html" class="sidebar-link">Stok & Mesin</a></li>
+        <li class="sidebar-item owner-only"><a href="karyawan.html" class="sidebar-link">Karyawan</a></li>
+        <li class="sidebar-item owner-only"><a href="laporan.html" class="sidebar-link">Laporan</a></li>
+        <li class="sidebar-item"><a href="pengaturan.html" class="sidebar-link">Pengaturan</a></li>
+      </ul>
+      <div style="padding: 20px; border-top: 1px solid var(--border-color);">
+        <div style="font-size: 0.875rem; font-weight: 600;" id="userNameDisplay">Memuat...</div>
+        <div style="font-size: 0.75rem; color: var(--text-secondary); text-transform: uppercase;" id="userRoleDisplay">...</div>
+        <button onclick="logoutUser()" style="margin-top: 12px; width: 100%; padding: 8px; background: none; border: 1px solid var(--border-color); color: var(--accent-danger); border-radius: 6px; cursor: pointer; font-size: 0.75rem; font-weight: 600;">Keluar Sesi</button>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <header class="main-header">
+        <div>
+          <h1 style="font-size: 1.5rem; font-weight: 700;">Database Pelanggan</h1>
+          <p style="font-size: 0.875rem; color: var(--text-secondary);">Daftar seluruh pelanggan terdaftar di DEXXLAUNDRY</p>
+        </div>
+      </header>
+
+      <div class="content-body">
+        <div class="search-bar">
+          <input type="text" id="searchInput" class="search-input" placeholder="Cari nama atau nomor HP..." oninput="filterCustomer()">
+          <button onclick="openModal()" style="background-color: var(--accent-primary); color: #FFF; padding: 10px 18px; border-radius: 8px; border: none; font-weight: 600; font-size: 0.875rem; cursor: pointer; box-shadow: var(--glow-teal);">+ Tambah Pelanggan</button>
+        </div>
+
+        <div class="card">
+          <div class="table-container">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Nama Pelanggan</th>
+                  <th>Nomor WhatsApp</th>
+                  <th>Total Order</th>
+                  <th>Gabung Sejak</th>
+                  <th>Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="customerTableBody">
+                <!-- Data dinamis -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Modal Tambah Pelanggan -->
+  <div id="custModal" class="modal">
+    <div class="modal-content">
+      <h3 style="margin-bottom: 16px; font-weight: 700;">Tambah Pelanggan Baru</h3>
+      <form onsubmit="saveCustomer(event)">
+        <div style="margin-bottom: 12px;">
+          <label style="font-size: 0.875rem; color: var(--text-secondary);">Nama Pelanggan</label>
+          <input type="text" id="newCustName" class="form-input" required style="width:100%; padding:10px; background:var(--bg-surface); border:1px solid var(--border-color); color:var(--text-primary); border-radius:6px; margin-top:6px;">
+        </div>
+        <div style="margin-bottom: 20px;">
+          <label style="font-size: 0.875rem; color: var(--text-secondary);">Nomor WhatsApp</label>
+          <input type="text" id="newCustPhone" class="form-input" required style="width:100%; padding:10px; background:var(--bg-surface); border:1px solid var(--border-color); color:var(--text-primary); border-radius:6px; margin-top:6px;">
+        </div>
+        <div style="display: flex; gap: 10px;">
+          <button type="submit" style="flex:1; padding:10px; background:var(--accent-primary); color:#FFF; border:none; border-radius:6px; font-weight:600; cursor:pointer;">Simpan</button>
+          <button type="button" onclick="closeModal()" style="flex:1; padding:10px; background:var(--bg-surface); color:var(--text-primary); border:1px solid var(--border-color); border-radius:6px; font-weight:600; cursor:pointer;">Batal</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="../assets/js/auth.js"></script>
+  <script>
+    let customers = [];
+
+    window.addEventListener('DOMContentLoaded', () => {
+      const user = checkAuth();
+      if (!user) return;
+      document.getElementById('userNameDisplay').textContent = user.name;
+      document.getElementById('userRoleDisplay').textContent = user.role === 'owner' ? 'Owner / Pemilik' : 'Karyawan / Kasir';
+      if (user.role !== 'owner') {
+        document.querySelectorAll('.owner-only').forEach(el => el.style.display = 'none');
+      }
+      loadCustomers();
+    });
+
+    function loadCustomers() {
+      const saved = localStorage.getItem('dexx_customers');
+      if (saved) {
+        customers = JSON.parse(saved);
+      } else {
+        customers = [
+          { name: 'hjanja', phone: '081234567890', orders: 12, date: '10 Jan 2026' },
+          { name: 'Hendra Gunawan', phone: '081987654321', orders: 28, date: '02 Feb 2026' },
+          { name: 'Asep Gustiawan', phone: '085612345678', orders: 5, date: '15 Feb 2026' },
+          { name: 'Dedi Kurniawan', phone: '087811223344', orders: 9, date: '20 Feb 2026' }
+        ];
+        localStorage.setItem('dexx_customers', JSON.stringify(customers));
+      }
+      renderCustomerTable(customers);
+    }
+
+    function renderCustomerTable(data) {
+      const tbody = document.getElementById('customerTableBody');
+      tbody.innerHTML = '';
+      if (data.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:var(--text-secondary); padding:20px;">Tidak ada data pelanggan.</td></tr>`;
+        return;
+      }
+      data.forEach((c, index) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td style="font-weight: 600;">${c.name}</td>
+          <td>${c.phone}</td>
+          <td>${c.orders} Order</td>
+          <td>${c.date}</td>
+          <td><button class="btn-action" onclick="deleteCustomer(${index})" style="color:var(--accent-danger); border-color:rgba(239,68,68,0.3)">Hapus</button></td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function openModal() { document.getElementById('custModal').style.display = 'flex'; }
+    function closeModal() { document.getElementById('custModal').style.display = 'none'; }
+
+    function saveCustomer(e) {
+      e.preventDefault();
+      const name = document.getElementById('newCustName').value;
+      const phone = document.getElementById('newCustPhone').value;
+      const newC = {
+        name: name,
+        phone: phone,
+        orders: 1,
+        date: new Date().toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' })
+      };
+      customers.unshift(newC);
+      localStorage.setItem('dexx_customers', JSON.stringify(customers));
+      closeModal();
+      renderCustomerTable(customers);
+      alert('Pelanggan berhasil ditambahkan!');
+    }
+
+    function deleteCustomer(index) {
+      if (confirm('Yakin ingin menghapus pelanggan ini?')) {
+        customers.splice(index, 1);
+        localStorage.setItem('dexx_customers', JSON.stringify(customers));
+        renderCustomerTable(customers);
+      }
+    }
+
+    function filterCustomer() {
+      const keyword = document.getElementById('searchInput').value.toLowerCase();
+      const filtered = customers.filter(c => c.name.toLowerCase().includes(keyword) || c.phone.includes(keyword));
+      renderCustomerTable(filtered);
+    }
+  </script>
+</body>
+</html>

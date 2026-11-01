@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manajemen Karyawan - DEXXLAUNDRY</title>
+  <link rel="stylesheet" href="../assets/css/variables.css">
+  <link rel="stylesheet" href="../assets/css/style.css">
+  <style>
+    .table-container { width: 100%; overflow-x: auto; }
+    .data-table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.875rem; }
+    .data-table th, .data-table td { padding: 14px 16px; border-bottom: 1px solid var(--border-color); }
+    .data-table th { color: var(--text-secondary); font-weight: 600; background-color: var(--bg-surface); }
+    .data-table tr:hover td { background-color: var(--bg-surface-hover); }
+    .badge-role { padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; display: inline-block; }
+    .badge-owner { background-color: rgba(13, 148, 136, 0.15); color: #14B8A6; }
+    .badge-staff { background-color: rgba(59, 130, 246, 0.15); color: #60A5FA; }
+    .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 100; align-items: center; justify-content: center; }
+    .modal-content { background: var(--bg-card); border: 1px solid var(--border-color); padding: 30px; border-radius: 12px; width: 100%; max-width: 400px; }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <aside class="sidebar">
+      <div class="sidebar-brand">DEXX<span>LAUNDRY</span></div>
+      <ul class="sidebar-menu">
+        <li class="sidebar-item"><a href="dashboard.html" class="sidebar-link">Dashboard</a></li>
+        <li class="sidebar-item"><a href="order.html" class="sidebar-link">Order</a></li>
+        <li class="sidebar-item"><a href="kasir.html" class="sidebar-link">Kasir</a></li>
+        <li class="sidebar-item"><a href="pelanggan.html" class="sidebar-link">Pelanggan</a></li>
+        <li class="sidebar-item"><a href="stok-mesin.html" class="sidebar-link">Stok & Mesin</a></li>
+        <li class="sidebar-item owner-only"><a href="karyawan.html" class="sidebar-link active">Karyawan</a></li>
+        <li class="sidebar-item owner-only"><a href="laporan.html" class="sidebar-link">Laporan</a></li>
+        <li class="sidebar-item owner-only"><a href="pengaturan.html" class="sidebar-link">Pengaturan</a></li>
+      </ul>
+      <div style="padding: 20px; border-top: 1px solid var(--border-color);">
+        <div style="font-size: 0.875rem; font-weight: 600;" id="userNameDisplay">Memuat...</div>
+        <div style="font-size: 0.75rem; color: var(--text-secondary); text-transform: uppercase;" id="userRoleDisplay">...</div>
+        <button onclick="logoutUser()" style="margin-top: 12px; width: 100%; padding: 8px; background: none; border: 1px solid var(--border-color); color: var(--accent-danger); border-radius: 6px; cursor: pointer; font-size: 0.75rem; font-weight: 600;">Keluar Sesi</button>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <header class="main-header">
+        <div>
+          <h1 style="font-size: 1.5rem; font-weight: 700;">Manajemen Karyawan</h1>
+          <p style="font-size: 0.875rem; color: var(--text-secondary);">Kelola akun staf dan hak akses operasional outlet</p>
+        </div>
+        <div>
+          <button onclick="openEmpModal()" style="background-color: var(--accent-primary); color: #FFF; padding: 10px 18px; border-radius: 8px; border: none; font-weight: 600; font-size: 0.875rem; cursor: pointer; box-shadow: var(--glow-teal);">+ Tambah Karyawan</button>
+        </div>
+      </header>
+
+      <div class="content-body">
+        <div class="card">
+          <div class="table-container">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Nama Karyawan</th>
+                  <th>Email Akses</th>
+                  <th>Peran (Role)</th>
+                  <th>Status Akun</th>
+                  <th>Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="empTableBody">
+                <!-- Data dinamis -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Modal Tambah Karyawan -->
+  <div id="empModal" class="modal">
+    <div class="modal-content">
+      <h3 style="margin-bottom: 16px; font-weight: 700;" id="modalTitle">Tambah Karyawan Baru</h3>
+      <form onsubmit="saveEmployee(event)">
+        <input type="hidden" id="editIndex" value="-1">
+        <div style="margin-bottom: 12px;">
+          <label style="font-size: 0.875rem; color: var(--text-secondary);">Nama Karyawan</label>
+          <input type="text" id="empName" class="form-input" required style="width:100%; padding:10px; background:var(--bg-surface); border:1px solid var(--border-color); color:var(--text-primary); border-radius:6px; margin-top:6px;">
+        </div>
+        <div style="margin-bottom: 12px;">
+          <label style="font-size: 0.875rem; color: var(--text-secondary);">Email Login</label>
+          <input type="email" id="empEmail" class="form-input" required style="width:100%; padding:10px; background:var(--bg-surface); border:1px solid var(--border-color); color:var(--text-primary); border-radius:6px; margin-top:6px;">
+        </div>
+        <div style="margin-bottom: 12px;">
+          <label style="font-size: 0.875rem; color: var(--text-secondary);">Password</label>
+          <input type="password" id="empPass" class="form-input" required style="width:100%; padding:10px; background:var(--bg-surface); border:1px solid var(--border-color); color:var(--text-primary); border-radius:6px; margin-top:6px;">
+        </div>
+        <div style="margin-bottom: 20px;">
+          <label style="font-size: 0.875rem; color: var(--text-secondary);">Role / Hak Akses</label>
+          <select id="empRole" class="form-input" style="width:100%; padding:10px; background:var(--bg-surface); border:1px solid var(--border-color); color:var(--text-primary); border-radius:6px; margin-top:6px;">
+            <option value="staff">Karyawan / Kasir</option>
+            <option value="owner">Owner (Pemilik)</option>
+          </select>
+        </div>
+        <div style="display: flex; gap: 10px;">
+          <button type="submit" style="flex:1; padding:10px; background:var(--accent-primary); color:#FFF; border:none; border-radius:6px; font-weight:600; cursor:pointer;">Simpan</button>
+          <button type="button" onclick="closeEmpModal()" style="flex:1; padding:10px; background:var(--bg-surface); color:var(--text-primary); border:1px solid var(--border-color); border-radius:6px; font-weight:600; cursor:pointer;">Batal</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="../assets/js/auth.js"></script>
+  <script>
+    let employees = [];
+
+    window.addEventListener('DOMContentLoaded', () => {
+      const user = checkAuth();
+      if (!user) return;
+      document.getElementById('userNameDisplay').textContent = user.name;
+      document.getElementById('userRoleDisplay').textContent = user.role === 'owner' ? 'Owner / Pemilik' : 'Karyawan / Kasir';
+
+      if (user.role !== 'owner') {
+        alert('Akses Ditolak: Halaman ini khusus untuk Owner.');
+        window.location.href = 'dashboard.html';
+        return;
+      }
+      loadEmployees();
+    });
+
+    function loadEmployees() {
+      const saved = localStorage.getItem('dexx_employees');
+      if (saved) {
+        employees = JSON.parse(saved);
+      } else {
+        employees = [
+          { name: 'Asep Owner', email: 'owner@dexxlaundry.com', pass: 'owner123', role: 'owner' },
+          { name: 'Budi Kasir', email: 'staff@dexxlaundry.com', pass: 'staff123', role: 'staff' }
+        ];
+        localStorage.setItem('dexx_employees', JSON.stringify(employees));
+      }
+      renderEmpTable();
+    }
+
+    function renderEmpTable() {
+      const tbody = document.getElementById('empTableBody');
+      tbody.innerHTML = '';
+      employees.forEach((emp, index) => {
+        const badge = emp.role === 'owner' ? '<span class="badge-role badge-owner">Owner</span>' : '<span class="badge-role badge-staff">Karyawan / Kasir</span>';
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td style="font-weight: 600;">${emp.name}</td>
+          <td>${emp.email}</td>
+          <td>${badge}</td>
+          <td><span style="color: var(--accent-success); font-size: 0.75rem; font-weight: 600;">Aktif</span></td>
+          <td>
+            <button class="btn-action" onclick="editEmp(${index})">Edit</button>
+            <button class="btn-action" onclick="deleteEmp(${index})" style="color:var(--accent-danger); border-color:rgba(239,68,68,0.3); margin-left:6px;">Hapus</button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function openEmpModal() {
+      document.getElementById('modalTitle').textContent = 'Tambah Karyawan Baru';
+      document.getElementById('editIndex').value = '-1';
+      document.getElementById('empName').value = '';
+      document.getElementById('empEmail').value = '';
+      document.getElementById('empPass').value = '';
+      document.getElementById('empModal').style.display = 'flex';
+    }
+
+    function closeEmpModal() { document.getElementById('empModal').style.display = 'none'; }
+
+    function saveEmployee(e) {
+      e.preventDefault();
+      const index = parseInt(document.getElementById('editIndex').value);
+      const name = document.getElementById('empName').value;
+      const email = document.getElementById('empEmail').value;
+      const pass = document.getElementById('empPass').value;
+      const role = document.getElementById('empRole').value;
+
+      if (index === -1) {
+        employees.push({ name, email, pass, role });
+      } else {
+        employees[index] = { name, email, pass, role };
+      }
+
+      localStorage.setItem('dexx_employees', JSON.stringify(employees));
+      closeEmpModal();
+      renderEmpTable();
+      alert('Data karyawan berhasil disimpan!');
+    }
+
+    function editEmp(index) {
+      const emp = employees[index];
+      document.getElementById('modalTitle').textContent = 'Edit Akun Karyawan';
+      document.getElementById('editIndex').value = index;
+      document.getElementById('empName').value = emp.name;
+      document.getElementById('empEmail').value = emp.email;
+      document.getElementById('empPass').value = emp.pass;
+      document.getElementById('empRole').value = emp.role;
+      document.getElementById('empModal').style.display = 'flex';
+    }
+
+    function deleteEmp(index) {
+      if (confirm('Yakin ingin menghapus akun karyawan ini?')) {
+        employees.splice(index, 1);
+        localStorage.setItem('dexx_employees', JSON.stringify(employees));
+        renderEmpTable();
+      }
+    }
+  </script>
+</body>
+</html>

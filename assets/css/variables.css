@@ -1,0 +1,38 @@
+:root {
+  /* Background & Surface Colors (Dark Theme Professional) */
+  --bg-main: #0B1120;
+  --bg-surface: #1E293B;
+  --bg-surface-hover: #334155;
+  --bg-card: #131C31;
+  --border-color: #1E293B;
+  --border-hover: #334155;
+
+  /* Text Colors */
+  --text-primary: #F8FAFC;
+  --text-secondary: #94A3B8;
+  --text-muted: #64748B;
+
+  /* Accent & Brand Colors */
+  --accent-primary: #0D9488; /* Deep Teal */
+  --accent-primary-hover: #14B8A6;
+  --accent-success: #10B981; /* Emerald */
+  --accent-warning: #F59E0B; /* Amber */
+  --accent-danger: #EF4444;  /* Rose / Red */
+  
+  /* Low Stock Alert Styling Variables */
+  --stock-danger-bg: rgba(239, 68, 68, 0.12);
+  --stock-danger-text: #F87171;
+
+  /* Typography */
+  --font-sans: 'Plus Jakarta Sans', 'Inter', sans-serif;
+
+  /* Shadows & Glow Effects */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.2), 0 2px 4px -1px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -2px rgba(0, 0, 0, 0.2);
+  --glow-teal: 0 0 20px rgba(13, 148, 136, 0.15);
+
+  /* Transitions */
+  --transition-fast: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-normal: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}

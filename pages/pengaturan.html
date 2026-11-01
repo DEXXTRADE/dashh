@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pengaturan - DEXXLAUNDRY</title>
+  <link rel="stylesheet" href="../assets/css/variables.css">
+  <link rel="stylesheet" href="../assets/css/style.css">
+  <style>
+    .settings-grid {
+      max-width: 720px;
+    }
+    .form-group {
+      margin-bottom: 20px;
+    }
+    .form-label {
+      display: block;
+      font-size: 0.875rem;
+      font-weight: 500;
+      margin-bottom: 8px;
+      color: var(--text-secondary);
+    }
+    .form-input {
+      width: 100%;
+      padding: 12px 16px;
+      background-color: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      color: var(--text-primary);
+      font-size: 0.9375rem;
+    }
+    .form-input:focus {
+      outline: none;
+      border-color: var(--accent-primary);
+    }
+    .section-divider {
+      margin: 24px 0;
+      border: 0;
+      border-top: 1px solid var(--border-color);
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-brand">
+        DEXX<span>LAUNDRY</span>
+      </div>
+      <ul class="sidebar-menu">
+        <li class="sidebar-item">
+          <a href="dashboard.html" class="sidebar-link">Dashboard</a>
+        </li>
+        <li class="sidebar-item">
+          <a href="order.html" class="sidebar-link">Order</a>
+        </li>
+        <li class="sidebar-item">
+          <a href="kasir.html" class="sidebar-link">Kasir</a>
+        </li>
+        <li class="sidebar-item">
+          <a href="pelanggan.html" class="sidebar-link">Pelanggan</a>
+        </li>
+        <li class="sidebar-item">
+          <a href="stok-mesin.html" class="sidebar-link">Stok & Mesin</a>
+        </li>
+        <li class="sidebar-item owner-only">
+          <a href="karyawan.html" class="sidebar-link">Karyawan</a>
+        </li>
+        <li class="sidebar-item owner-only">
+          <a href="laporan.html" class="sidebar-link">Laporan</a>
+        </li>
+        <li class="sidebar-item">
+          <a href="pengaturan.html" class="sidebar-link active">Pengaturan</a>
+        </li>
+      </ul>
+      <div style="padding: 20px; border-top: 1px solid var(--border-color);">
+        <div style="font-size: 0.875rem; font-weight: 600;" id="userNameDisplay">Memuat...</div>
+        <div style="font-size: 0.75rem; color: var(--text-secondary); text-transform: uppercase;" id="userRoleDisplay">...</div>
+        <button onclick="logoutUser()" style="margin-top: 12px; width: 100%; padding: 8px; background: none; border: 1px solid var(--border-color); color: var(--accent-danger); border-radius: 6px; cursor: pointer; font-size: 0.75rem; font-weight: 600;">Keluar Sesi</button>
+      </div>
+    </aside>
+
+    <!-- Konten Utama -->
+    <main class="main-content">
+      <header class="main-header">
+        <div>
+          <h1 style="font-size: 1.5rem; font-weight: 700;">Pengaturan Sistem</h1>
+          <p style="font-size: 0.875rem; color: var(--text-secondary);">Konfigurasi profil outlet dan tarif layanan laundry</p>
+        </div>
+      </header>
+
+      <div class="content-body">
+        <div class="card settings-grid">
+          <form id="settingsForm">
+            
+            <h3 style="font-size: 1.125rem; font-weight: 700; margin-bottom: 16px;">Informasi Outlet</h3>
+            
+            <div class="form-group">
+              <label class="form-label">Nama Outlet Laundry</label>
+              <input type="text" id="storeName" class="form-input" value="DEXXLAUNDRY Cabang Utama">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Alamat Lengkap</label>
+              <input type="text" id="storeAddress" class="form-input" value="Jl. Contoh No. 123, Kota Medan">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Nomor Telepon / WhatsApp Outlet</label>
+              <input type="text" id="storePhone" class="form-input" value="081234567890">
+            </div>
+
+            <hr class="section-divider">
+
+            <h3 style="font-size: 1.125rem; font-weight: 700; margin-bottom: 16px;">Tarif Harga Layanan</h3>
+
+            <div class="form-group">
+              <label class="form-label">Cuci Kiloan Reguler (per Kg)</label>
+              <input type="number" id="priceReguler" class="form-input" value="6000">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Cuci Kiloan Express (per Kg)</label>
+              <input type="number" id="priceExpress" class="form-input" value="10000">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Cuci + Setrika (per Kg)</label>
+              <input type="number" id="priceCuciSetrika" class="form-input" value="8000">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Setrika Saja (per Kg)</label>
+              <input type="number" id="priceSetrika" class="form-input" value="5000">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Cuci Karpet (per Pcs)</label>
+              <input type="number" id="priceKarpet" class="form-input" value="35000">
+            </div>
+
+            <div class="form-group" style="margin-top: 28px;">
+              <button type="submit" style="padding: 12px 24px; background-color: var(--accent-primary); color: #FFF; border: none; border-radius: 8px; font-weight: 600; font-size: 0.9375rem; cursor: pointer; box-shadow: var(--glow-teal);">Simpan Perubahan Tarif</button>
+            </div>
+
+          </form>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="../assets/js/auth.js"></script>
+  <script>
+    window.addEventListener('DOMContentLoaded', () => {
+      const user = checkAuth();
+      if (!user) return;
+      document.getElementById('userNameDisplay').textContent = user.name;
+      document.getElementById('userRoleDisplay').textContent = user.role === 'owner' ? 'Owner / Pemilik' : 'Karyawan / Kasir';
+      if (user.role !== 'owner') {
+        document.querySelectorAll('.owner-only').forEach(el => el.style.display = 'none');
+      }
+
+      // Load data pengaturan yang tersimpan di localStorage (jika ada)
+      if (localStorage.getItem('dexx_settings')) {
+        const settings = JSON.parse(localStorage.getItem('dexx_settings'));
+        document.getElementById('storeName').value = settings.storeName;
+        document.getElementById('storeAddress').value = settings.storeAddress;
+        document.getElementById('storePhone').value = settings.storePhone;
+        document.getElementById('priceReguler').value = settings.priceReguler;
+        document.getElementById('priceExpress').value = settings.priceExpress;
+        document.getElementById('priceCuciSetrika').value = settings.priceCuciSetrika;
+        document.getElementById('priceSetrika').value = settings.priceSetrika;
+        document.getElementById('priceKarpet').value = settings.priceKarpet;
+      }
+    });
+
+    document.getElementById('settingsForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const settingsData = {
+        storeName: document.getElementById('storeName').value,
+        storeAddress: document.getElementById('storeAddress').value,
+        storePhone: document.getElementById('storePhone').value,
+        priceReguler: document.getElementById('priceReguler').value,
+        priceExpress: document.getElementById('priceExpress').value,
+        priceCuciSetrika: document.getElementById('priceCuciSetrika').value,
+        priceSetrika: document.getElementById('priceSetrika').value,
+        priceKarpet: document.getElementById('priceKarpet').value
+      };
+
+      localStorage.setItem('dexx_settings', JSON.stringify(settingsData));
+      alert('Berhasil! Perubahan tarif dan profil outlet telah disimpan dan disinkronkan ke Kasir.');
+    });
+  </script>
+</body>
+</html>

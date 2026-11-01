@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - DEXXLAUNDRY</title>
+  <link rel="stylesheet" href="assets/css/variables.css">
+  <link rel="stylesheet" href="assets/css/style.css">
+  <style>
+    .login-container {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: var(--bg-main);
+      padding: 20px;
+    }
+    .login-card {
+      width: 100%;
+      max-width: 420px;
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 40px;
+      box-shadow: var(--shadow-lg);
+    }
+    .login-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+      color: var(--text-primary);
+    }
+    .login-title span {
+      color: var(--accent-primary);
+    }
+    .login-subtitle {
+      color: var(--text-secondary);
+      font-size: 0.875rem;
+      margin-bottom: 32px;
+    }
+    .form-group {
+      margin-bottom: 20px;
+    }
+    .form-label {
+      display: block;
+      font-size: 0.875rem;
+      font-weight: 500;
+      margin-bottom: 8px;
+      color: var(--text-secondary);
+    }
+    .form-input {
+      width: 100%;
+      padding: 12px 16px;
+      background-color: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      color: var(--text-primary);
+      font-family: var(--font-sans);
+      font-size: 0.9375rem;
+      transition: var(--transition-fast);
+    }
+    .form-input:focus {
+      outline: none;
+      border-color: var(--accent-primary);
+      box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.15);
+    }
+    .btn-primary {
+      width: 100%;
+      padding: 12px;
+      background-color: var(--accent-primary);
+      color: #FFFFFF;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.9375rem;
+      cursor: pointer;
+      transition: var(--transition-fast);
+      margin-top: 8px;
+    }
+    .btn-primary:hover {
+      background-color: var(--accent-primary-hover);
+    }
+    .demo-accounts {
+      margin-top: 24px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border-color);
+    }
+    .demo-title {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+    }
+    .demo-btns {
+      display: flex;
+      gap: 8px;
+    }
+    .btn-demo {
+      flex: 1;
+      padding: 8px;
+      background-color: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      color: var(--text-secondary);
+      border-radius: 6px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition-fast);
+    }
+    .btn-demo:hover {
+      background-color: var(--bg-surface-hover);
+      color: var(--text-primary);
+    }
+    .error-message {
+      background-color: rgba(239, 68, 68, 0.1);
+      border: 1px solid rgba(239, 68, 68, 0.2);
+      color: var(--accent-danger);
+      padding: 10px;
+      border-radius: 6px;
+      font-size: 0.875rem;
+      margin-bottom: 20px;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="login-container">
+    <div class="login-card">
+      <h1 class="login-title">DEXX<span>LAUNDRY</span></h1>
+      <p class="login-subtitle">Masuk ke sistem dashboard operasional</p>
+      
+      <div id="errorAlert" class="error-message">Email atau kata sandi salah. Silakan coba lagi.</div>
+
+      <form id="loginForm">
+        <div class="form-group">
+          <label class="form-label" for="email">Email Pengguna</label>
+          <input type="email" id="email" class="form-input" placeholder="nama@dexxlaundry.com" required>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label" for="password">Kata Sandi</label>
+          <input type="password" id="password" class="form-input" placeholder="••••••••" required>
+        </div>
+
+        <button type="submit" class="btn-primary">Masuk ke Dashboard</button>
+      </form>
+
+      <div class="demo-accounts">
+        <p class="demo-title">Pintasan Akun Demo:</p>
+        <div class="demo-btns">
+          <button type="button" class="btn-demo" onclick="fillDemo('owner')">Akun Owner</button>
+          <button type="button" class="btn-demo" onclick="fillDemo('staff')">Akun Karyawan</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="assets/js/auth.js"></script>
+  <script>
+    function fillDemo(role) {
+      if (role === 'owner') {
+        document.getElementById('email').value = 'owner@dexxlaundry.com';
+        document.getElementById('password').value = 'owner123';
+      } else {
+        document.getElementById('email').value = 'staff@dexxlaundry.com';
+        document.getElementById('password').value = 'staff123';
+      }
+    }
+  </script>
+</body>
+</html>

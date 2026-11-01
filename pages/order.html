@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manajemen Order - DEXXLAUNDRY</title>
+  <link rel="stylesheet" href="../assets/css/variables.css">
+  <link rel="stylesheet" href="../assets/css/style.css">
+  <style>
+    .filter-bar {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+    .filter-btn {
+      background-color: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      color: var(--text-secondary);
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition-fast);
+    }
+    .filter-btn.active, .filter-btn:hover {
+      background-color: var(--accent-primary);
+      color: #FFF;
+      border-color: var(--accent-primary);
+    }
+    .table-container {
+      width: 100%;
+      overflow-x: auto;
+    }
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.875rem;
+    }
+    .data-table th, .data-table td {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border-color);
+    }
+    .data-table th {
+      color: var(--text-secondary);
+      font-weight: 600;
+      background-color: var(--bg-surface);
+    }
+    .data-table tr:hover td {
+      background-color: var(--bg-surface-hover);
+    }
+    .badge {
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      display: inline-block;
+    }
+    .badge-masuk { background-color: rgba(59, 130, 246, 0.15); color: #60A5FA; }
+    .badge-setrika { background-color: rgba(245, 158, 11, 0.15); color: #FBBF24; }
+    .badge-siap { background-color: rgba(16, 185, 129, 0.15); color: #34D399; }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-brand">
+        DEXX<span>LAUNDRY</span>
+      </div>
+      <ul class="sidebar-menu">
+        <li class="sidebar-item">
+          <a href="dashboard.html" class="sidebar-link">Dashboard</a>
+        </li>
+        <li class="sidebar-item">
+          <a href="order.html" class="sidebar-link active">Order</a>
+        </li>
+        <li class="sidebar-item">
+          <a href="kasir.html" class="sidebar-link">Kasir</a>
+        </li>
+        <li class="sidebar-item">
+          <a href="pelanggan.html" class="sidebar-link">Pelanggan</a>
+        </li>
+        <li class="sidebar-item">
+          <a href="stok-mesin.html" class="sidebar-link">Stok & Mesin</a>
+        </li>
+        <li class="sidebar-item owner-only">
+          <a href="karyawan.html" class="sidebar-link">Karyawan</a>
+        </li>
+        <li class="sidebar-item owner-only">
+          <a href="laporan.html" class="sidebar-link">Laporan</a>
+        </li>
+        <li class="sidebar-item">
+          <a href="pengaturan.html" class="sidebar-link">Pengaturan</a>
+        </li>
+      </ul>
+      <div style="padding: 20px; border-top: 1px solid var(--border-color);">
+        <div style="font-size: 0.875rem; font-weight: 600;" id="userNameDisplay">Memuat...</div>
+        <div style="font-size: 0.75rem; color: var(--text-secondary); text-transform: uppercase;" id="userRoleDisplay">...</div>
+        <button onclick="logoutUser()" style="margin-top: 12px; width: 100%; padding: 8px; background: none; border: 1px solid var(--border-color); color: var(--accent-danger); border-radius: 6px; cursor: pointer; font-size: 0.75rem; font-weight: 600;">Keluar Sesi</button>
+      </div>
+    </aside>
+
+    <!-- Konten Utama -->
+    <main class="main-content">
+      <header class="main-header">
+        <div>
+          <h1 style="font-size: 1.5rem; font-weight: 700;">Manajemen Order & Status Cucian</h1>
+          <p style="font-size: 0.875rem; color: var(--text-secondary);">Kelola dan perbarui status pengerjaan cucian pelanggan</p>
+        </div>
+        <div>
+          <a href="kasir.html" style="background-color: var(--accent-primary); color: #FFF; padding: 10px 18px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 0.875rem; box-shadow: var(--glow-teal);">+ Order Baru</a>
+        </div>
+      </header>
+
+      <div class="content-body">
+        
+        <!-- Tombol Filter Status -->
+        <div class="filter-bar">
+          <button class="filter-btn active" onclick="filterOrders('Semua', this)">Semua Order</button>
+          <button class="filter-btn" onclick="filterOrders('Masuk', this)">Masuk</button>
+          <button class="filter-btn" onclick="filterOrders('Cuci', this)">Cuci</button>
+          <button class="filter-btn" onclick="filterOrders('Kering', this)">Kering</button>
+          <button class="filter-btn" onclick="filterOrders('Setrika', this)">Setrika</button>
+          <button class="filter-btn" onclick="filterOrders('Siap Ambil', this)">Siap Ambil</button>
+        </div>
+
+        <div class="card">
+          <div class="table-container">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>No Resi</th>
+                  <th>Nama Pelanggan</th>
+                  <th>Layanan</th>
+                  <th>Total Biaya</th>
+                  <th>Status Saat Ini</th>
+                  <th>Aksi / Update Status</th>
+                </tr>
+              </thead>
+              <tbody id="orderTableBody">
+                <!-- Data akan dimuat otomatis menggunakan JavaScript -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <script src="../assets/js/auth.js"></script>
+  <script>
+    let allOrders = [];
+
+    window.addEventListener('DOMContentLoaded', () => {
+      const user = checkAuth();
+      if (!user) return;
+      document.getElementById('userNameDisplay').textContent = user.name;
+      document.getElementById('userRoleDisplay').textContent = user.role === 'owner' ? 'Owner / Pemilik' : 'Karyawan / Kasir';
+      if (user.role !== 'owner') {
+        document.querySelectorAll('.owner-only').forEach(el => el.style.display = 'none');
+      }
+
+      loadOrders();
+    });
+
+    function loadOrders() {
+      const saved = localStorage.getItem('dexx_orders');
+      if (saved) {
+        allOrders = JSON.parse(saved);
+      } else {
+        // Data default awal
+        allOrders = [
+          { id: 'LDY-20260316-001', name: 'hjanja', service: 'Cuci Kiloan Reguler (4 kg)', total: 'Rp 120.000', status: 'Masuk' },
+          { id: 'LDY-20260315-83458', name: 'Dedi Kurniawan', service: 'Cuci + Setrika (3.5 kg)', total: 'Rp 38.920', status: 'Setrika' },
+          { id: 'LDY-20260315-34712', name: 'Asep Gustiawan', service: 'Cuci Express (5 kg)', total: 'Rp 52.080', status: 'Siap Ambil' }
+        ];
+        localStorage.setItem('dexx_orders', JSON.stringify(allOrders));
+      }
+      renderTable(allOrders);
+    }
+
+    function renderTable(ordersToRender) {
+      const tbody = document.getElementById('orderTableBody');
+      tbody.innerHTML = '';
+
+      if (ordersToRender.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--text-secondary); padding:24px;">Belum ada data order pada kategori ini.</td></tr>`;
+        return;
+      }
+
+      ordersToRender.forEach(order => {
+        let badgeClass = 'badge-masuk';
+        if (order.status === 'Setrika') badgeClass = 'badge-setrika';
+        if (order.status === 'Siap Ambil' || order.status === 'Diambil') badgeClass = 'badge-siap';
+
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td style="font-weight: 600;">${order.id}</td>
+          <td>${order.name}</td>
+          <td>${order.service}</td>
+          <td>${order.total}</td>
+          <td><span class="badge ${badgeClass}">${order.status}</span></td>
+          <td>
+            <select onchange="updateStatus(this, '${order.id}')" style="padding: 6px; background:var(--bg-surface); border:1px solid var(--border-color); color:var(--text-primary); border-radius:6px; font-size:0.75rem;">
+              <option value="" disabled selected>Ubah Status...</option>
+              <option value="Masuk">Masuk</option>
+              <option value="Cuci">Proses Cuci</option>
+              <option value="Kering">Proses Kering</option>
+              <option value="Setrika">Proses Setrika</option>
+              <option value="Siap Ambil">Siap Ambil</option>
+              <option value="Diambil">Diambil (Selesai)</option>
+            </select>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function filterOrders(status, btnElement) {
+      // Ubah tombol aktif
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      btnElement.classList.add('active');
+
+      if (status === 'Semua') {
+        renderTable(allOrders);
+      } else {
+        const filtered = allOrders.filter(o => o.status === status);
+        renderTable(filtered);
+      }
+    }
+
+    function updateStatus(selectElem, resiId) {
+      const newStatus = selectElem.value;
+      const orderIndex = allOrders.findIndex(o => o.id === resiId);
+      
+      if (orderIndex !== -1) {
+        allOrders[orderIndex].status = newStatus;
+        localStorage.setItem('dexx_orders', JSON.stringify(allOrders));
+        alert('Status order ' + resiId + ' berhasil diperbarui menjadi: ' + newStatus);
+        renderTable(allOrders);
+      }
+    }
+  </script>
+</body>
+</html>
