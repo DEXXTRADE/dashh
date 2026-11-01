@@ -290,6 +290,49 @@
       alert('Transaksi berhasil disimpan dan masuk ke riwayat order!');
       window.location.href = 'order.html';
     }
+
   </script>
+  <!-- Di bagian bawah file pages/kasir.html -->
+<script type="module">
+  import { db, collection, addDoc } from "../assets/js/firebase.js";
+
+  // Tangkap form kasir Anda (sesuaikan dengan id form di file kasir.html Anda)
+  const kasirForm = document.getElementById('kasirForm'); // atau sesuaikan selector formnya
+  
+  if (kasirForm) {
+    kasirForm.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const name = document.getElementById('custName').value;
+      const phone = document.getElementById('custPhone').value;
+      const serviceSelect = document.getElementById('serviceType');
+      const serviceText = serviceSelect.selectedOptions[0].text.split('(')[0].trim();
+      const pricePerUnit = parseInt(serviceSelect.value);
+      const qty = parseInt(document.getElementById('qtyWeight').value) || 1;
+      const totalNum = pricePerUnit * qty;
+      const totalFormatted = 'Rp ' + totalNum.toLocaleString('id-ID');
+
+      const newOrder = {
+        id: 'LDY-' + Date.now().toString().slice(-8),
+        name: name,
+        phone: phone,
+        service: serviceText + ` (${qty} kg/unit)`,
+        total: totalFormatted,
+        status: 'Masuk',
+        createdAt: new Date().toISOString()
+      };
+
+      try {
+        // Menyimpan data secara online ke Firestore
+        await addDoc(collection(db, "orders"), newOrder);
+        alert('Transaksi berhasil disimpan secara online dan sinkron ke semua perangkat!');
+        window.location.href = 'order.html';
+      } catch (error) {
+        console.error("Gagal menyimpan order: ", error);
+        alert('Terjadi kesalahan saat menyimpan ke database online.');
+      }
+    });
+  }
+</script>
 </body>
 </html>
